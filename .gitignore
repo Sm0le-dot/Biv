@@ -1,0 +1,8 @@
+node_modules/
+.electron-overlay.pid
+.biv-electron.pid
+.biv-run/
+.env
+data/
+.DS_Store
+out/

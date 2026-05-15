@@ -1,0 +1,31 @@
+{
+  "name": "Biv",
+  "version": "1.2.0",
+  "description": "Desktop LLM overlay (Ollama / OpenRouter)",
+  "main": "backend/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "start:min": "start \"\" /MIN cmd /c \"npm run start\"",
+    "start:bg": "node others/scripts/start-background.js",
+    "stop:bg": "node others/scripts/stop-background.js",
+    "startup:install": "node others/scripts/install-startup.js",
+    "startup:uninstall": "node others/scripts/uninstall-startup.js",
+    "ollama:pull": "ollama pull llama3.2",
+    "ollama:pull-vision": "ollama pull llama3.2-vision"
+  },
+  "keywords": [
+    "ollama",
+    "openrouter",
+    "llm",
+    "overlay",
+    "electron"
+  ],
+  "author": "Sm0le-dot",
+  "repository": "https://github.com/Sm0le-dot/Biv",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "electron": "^42.0.1"
+  }
+}

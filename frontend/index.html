@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Chats</h3>
+            <button class="new-chat-btn" onclick="createNewChat()"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div class="sidebar-chats" id="chat-list"></div>
+    </div>
+
+    <div class="ai_output_container">
+        <div class="ai_output_div" id="aiOutput"></div>
+    </div>
+
+    <div class="container" id="container">
+        <div id="ollama-missing-banner" class="ollama-missing-banner" role="status" aria-live="polite">
+            <span class="ollama-missing-text">Ollama is not running on this PC. Local models need the Ollama app
+                (free).</span>
+            <button type="button" class="ollama-banner-btn" id="ollama-btn-download-page">Get Ollama</button>
+            <button type="button" class="ollama-banner-btn" id="ollama-btn-download-win" style="display: none;">Download
+                installer</button>
+            <button type="button" class="ollama-banner-btn" id="ollama-btn-start-bg"
+                title="Runs ollama serve in the background (if installed)">Start Ollama</button>
+            <button type="button" class="ollama-banner-btn" id="ollama-btn-retry" title="Check again">Retry</button>
+        </div>
+        <div class="model-selector-wrapper">
+            <button type="button" id="model-select-btn" class="model-select-btn" onclick="toggleModelList()"
+                title="Pick any Ollama/OpenRouter model. Configure defaults and custom models in .env">
+                <span id="current-model-name">Ollama · Llama 3.2</span>
+                <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <div class="model-list" id="model-list"></div>
+        </div>
+
+        <div id="image-preview-wrapper" style="display: none;"></div>
+
+        <input type="file" id="file-input" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+        <button id="attach-button" type="button" onclick="document.getElementById('file-input').click()"><i
+                class="fa-solid fa-paperclip"></i></button>
+
+        <button id="history-button" type="button" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <button id="settings-button" type="button" onclick="toggleSettings()"><i class="fa-solid fa-gear"></i></button>
+        <textarea id="ai-input" placeholder="Ask anything…" autofocus></textarea>
+        <button id="send-button" type="button" onclick="send()"><i
+                class="fa-solid fa-arrow-up send-button"></i></button>
+    </div>
+
+    <!-- Settings Sidebar -->
+    <div class="settings-sidebar" id="settings-modal">
+        <div class="settings-header">
+            <h3>Settings</h3>
+        </div>
+        <div class="settings-body">
+                <!-- Theme Section -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-palette"></i> Theme</h3>
+                    <div class="settings-option radio-option">
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="dark" onchange="changeTheme('dark')">
+                            <span class="radio-indicator"></span>
+                            <span class="option-text">Dark</span>
+                        </label>
+                    </div>
+                    <div class="settings-option radio-option">
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="light" onchange="changeTheme('light')">
+                            <span class="radio-indicator"></span>
+                            <span class="option-text">Light (No need for that)</span>
+                        </label>
+                    </div>
+                    <div class="settings-option radio-option">
+                        <label class="radio-label">
+                            <input type="radio" name="theme" value="transparent" onchange="changeTheme('transparent')">
+                            <span class="radio-indicator"></span>
+                            <span class="option-text">Transparent</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+                    <div class="settings-option">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="sound-notify" onchange="toggleSoundNotification()">
+                            <span class="toggle-control"></span>
+                            <span class="option-text">Sound on response</span>
+                        </label>
+                    </div>
+                    <div class="settings-option">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="desktop-notify" onchange="toggleDesktopNotification()">
+                            <span class="toggle-control"></span>
+                            <span class="option-text">Desktop notifications</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Backup Section -->
+                <div class="settings-section">
+                    <h3><i class="fa-solid fa-download"></i> Backup & Export</h3>
+                    <div class="settings-option">
+                        <button type="button" class="settings-btn" onclick="exportChats()">
+                            <i class="fa-solid fa-file-export"></i> Export Chats
+                        </button>
+                    </div>
+                    <div class="settings-option">
+                        <button type="button" class="settings-btn" onclick="importChats()">
+                            <i class="fa-solid fa-file-import"></i> Import Chats
+                        </button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImportChats(event)">
+                    </div>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="settings-section danger">
+                    <h3><i class="fa-solid fa-exclamation-triangle"></i> Danger Zone</h3>
+                    <div class="settings-option">
+                        <button type="button" class="settings-btn danger-btn" onclick="confirmClearChats()">
+                            <i class="fa-solid fa-trash"></i> Clear All Chats
+                        </button>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
