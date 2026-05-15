@@ -1,4 +1,5 @@
 const { app, BrowserWindow, globalShortcut, ipcMain, shell } = require('electron');
+app.setName('Biv');
 const { spawn } = require('child_process');
 const fs = require('fs');
 const https = require('https');
@@ -437,6 +438,10 @@ app.whenReady().then(() => {
 
     // Write PID file for management scripts
     try {
+        const dataDir = path.dirname(OVERLAY_PID_FILE);
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
         fs.writeFileSync(OVERLAY_PID_FILE, String(process.pid), 'utf8');
     } catch (e) {
         console.warn('Could not write PID file:', e.message);
