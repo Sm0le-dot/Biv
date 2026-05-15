@@ -1,3 +1,4 @@
 @echo off
-npm run startup:install
-pause
+cd /d "%~dp0"
+call npm run startup:install
+exit

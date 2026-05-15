@@ -1,6 +1,6 @@
 {
   "name": "Biv",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Desktop LLM overlay (Ollama / OpenRouter)",
   "main": "backend/main.js",
   "scripts": {

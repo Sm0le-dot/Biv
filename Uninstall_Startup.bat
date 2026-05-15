@@ -1,3 +1,4 @@
 @echo off
-npm run startup:uninstall
-pause
+cd /d "%~dp0"
+call npm run startup:uninstall
+exit

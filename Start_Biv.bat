@@ -1,3 +1,4 @@
 @echo off
-npm run start:bg
+cd /d "%~dp0"
+call npm run start:bg
 exit

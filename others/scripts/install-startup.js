@@ -13,7 +13,7 @@ if (process.platform !== 'win32') {
     console.log('Automatic startup is only wired for Windows (Startup folder shortcut).');
     console.log('');
     console.log('On macOS: System Settings → General → Login Items → add:');
-    console.log('  ', process.execPath, path.join(root, 'scripts', 'start-background.js'));
+    console.log('  ', process.execPath, path.join(root, 'others', 'scripts', 'start-background.js'));
     console.log('');
     console.log('On Linux: add to your WM autostart or a systemd user unit running that command.');
     process.exit(0);

@@ -10,7 +10,7 @@ try {
     exit 1
 }
 
-$scriptPath = Join-Path $ProjectRoot 'scripts\start-background.js'
+$scriptPath = Join-Path $ProjectRoot 'others\scripts\start-background.js'
 if (-not (Test-Path -LiteralPath $scriptPath)) {
     Write-Error "Missing script: $scriptPath"
     exit 1
