@@ -5,9 +5,6 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 
-
-
-
 function trimEnvLineValue(s) {
     return String(s || '')
         .trim()
@@ -168,7 +165,7 @@ async function tryStartOllamaInBackground(baseUrl) {
  */
 async function probeOllama(baseUrl) {
     const base = String(baseUrl || 'http://127.0.0.1:11434').replace(/\/+$/, '');
-    
+
     const tryProbe = (urlStr) => {
         let url;
         try {
@@ -257,7 +254,7 @@ function httpsDownloadToFile(url, destPath) {
                         return;
                     }
                     if (res.statusCode !== 200) {
-                        file.close(() => fs.unlink(destPath, () => {}));
+                        file.close(() => fs.unlink(destPath, () => { }));
                         reject(new Error(`Download HTTP ${res.statusCode}`));
                         return;
                     }
@@ -265,7 +262,7 @@ function httpsDownloadToFile(url, destPath) {
                     file.on('finish', () => file.close((err) => (err ? reject(err) : resolve())));
                 })
                 .on('error', (err) => {
-                    file.close(() => fs.unlink(destPath, () => {}));
+                    file.close(() => fs.unlink(destPath, () => { }));
                     reject(err);
                 });
         };
@@ -299,7 +296,7 @@ function createWindow() {
         resizable: false,      // <--- THIS STOPS SIZING
         movable: false,        // Keep this true so you can still drag it
         hasShadow: false,     // <--- THIS REMOVES THE OS GRADIENT/SHADOW
-        show: false, 
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -414,7 +411,7 @@ app.whenReady().then(() => {
             // If it's visible, hide it
             isHiding = true;
             win.webContents.send('hide-window');
-            
+
             // Safety timeout: if renderer doesn't reply in 500ms, force hide
             setTimeout(() => {
                 if (isHiding && win.isVisible()) {

@@ -1081,6 +1081,248 @@ async function typeMessage(element, text, speed = 2, signal) {
         type();
     });
 }
+    
+// ============ CLOCK WIDGET LOGIC ============
+
+const clockWidget = document.getElementById('clock-widget');
+const clockTabs = document.querySelectorAll('.clock-tab');
+const tabPanes = document.querySelectorAll('.tab-pane');
+
+// Clock Tab
+const digitalClock = document.getElementById('digital-clock');
+const dateDisplay = document.getElementById('date-display');
+
+function updateClock() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    if (digitalClock) digitalClock.textContent = `${hours}:${minutes}:${seconds}`;
+    
+    if (dateDisplay) {
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        dateDisplay.textContent = now.toLocaleDateString(undefined, options);
+    }
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+// Tab Switching
+clockTabs.forEach(tab => {
+    tab.onclick = () => {
+        const target = tab.getAttribute('data-tab');
+        
+        clockTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        tabPanes.forEach(pane => {
+            pane.classList.remove('active');
+            if (pane.id === `tab-${target}`) {
+                pane.classList.add('active');
+            }
+        });
+    };
+});
+
+let clockCloseTimeout = null;
+
+function toggleClock(tabName = 'clock') {
+    if (!clockWidget) return;
+    if (clockWidget.classList.contains('visible')) {
+        closeClock();
+    } else {
+        openClock(tabName);
+    }
+}
+
+function openClock(tabName = 'clock') {
+    if (!clockWidget) return;
+    
+    // Clear any pending close timeout
+    if (clockCloseTimeout) {
+        clearTimeout(clockCloseTimeout);
+        clockCloseTimeout = null;
+    }
+    
+    clockWidget.style.display = 'flex';
+    // Small delay to ensure display:flex is applied before transition
+    requestAnimationFrame(() => {
+        clockWidget.classList.add('visible');
+    });
+    
+    const tab = Array.from(clockTabs).find(t => t.getAttribute('data-tab') === tabName);
+    if (tab) tab.click();
+}
+
+function closeClock() {
+    if (!clockWidget) return;
+    
+    clockWidget.classList.remove('visible');
+    
+    // Clear any existing timeout before setting a new one
+    if (clockCloseTimeout) clearTimeout(clockCloseTimeout);
+    
+    clockCloseTimeout = setTimeout(() => {
+        clockWidget.style.display = 'none';
+        clockCloseTimeout = null;
+    }, 500);
+}
+
+// Stopwatch Logic
+let stopwatchInterval = null;
+let stopwatchTime = 0; // in milliseconds
+const stopwatchDisplay = document.getElementById('stopwatch-display');
+const stopwatchStartBtn = document.getElementById('stopwatch-start');
+const stopwatchLapBtn = document.getElementById('stopwatch-lap');
+const stopwatchResetBtn = document.getElementById('stopwatch-reset');
+const stopwatchLaps = document.getElementById('stopwatch-laps');
+
+function formatStopwatch(ms) {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    const centiseconds = Math.floor((ms % 1000) / 10);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
+}
+
+if (stopwatchStartBtn) {
+    stopwatchStartBtn.onclick = () => {
+        if (stopwatchInterval) {
+            // Stop
+            clearInterval(stopwatchInterval);
+            stopwatchInterval = null;
+            stopwatchStartBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            stopwatchStartBtn.classList.remove('running');
+        } else {
+            // Start
+            const startTime = Date.now() - stopwatchTime;
+            stopwatchInterval = setInterval(() => {
+                stopwatchTime = Date.now() - startTime;
+                stopwatchDisplay.textContent = formatStopwatch(stopwatchTime);
+            }, 10);
+            stopwatchStartBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            stopwatchStartBtn.classList.add('running');
+        }
+    };
+}
+
+if (stopwatchLapBtn) {
+    stopwatchLapBtn.onclick = () => {
+        if (stopwatchTime === 0) return;
+        const lapDiv = document.createElement('div');
+        lapDiv.className = 'lap-item';
+        lapDiv.innerHTML = `<span>Lap ${stopwatchLaps.children.length + 1}</span><span>${formatStopwatch(stopwatchTime)}</span>`;
+        stopwatchLaps.prepend(lapDiv);
+    };
+}
+
+if (stopwatchResetBtn) {
+    stopwatchResetBtn.onclick = () => {
+        clearInterval(stopwatchInterval);
+        stopwatchInterval = null;
+        stopwatchTime = 0;
+        stopwatchDisplay.textContent = '00:00.00';
+        stopwatchStartBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        stopwatchStartBtn.classList.remove('running');
+        stopwatchLaps.innerHTML = '';
+    };
+}
+
+// Timer Logic
+let timerInterval = null;
+let timerTotalSeconds = 0;
+const timerDisplay = document.getElementById('timer-display');
+const timerStartBtn = document.getElementById('timer-start');
+const timerResetBtn = document.getElementById('timer-reset');
+const timerMinInput = document.getElementById('timer-min');
+const timerSecInput = document.getElementById('timer-sec');
+const timerSetBtn = document.getElementById('timer-set');
+
+function formatTimer(totalSecs) {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+function updateTimerDisplay() {
+    timerDisplay.textContent = formatTimer(timerTotalSeconds);
+}
+
+if (timerSetBtn) {
+    timerSetBtn.onclick = () => {
+        const mins = parseInt(timerMinInput.value) || 0;
+        const secs = parseInt(timerSecInput.value) || 0;
+        timerTotalSeconds = (mins * 60) + secs;
+        updateTimerDisplay();
+    };
+}
+
+if (timerStartBtn) {
+    timerStartBtn.onclick = () => {
+        if (timerInterval) {
+            // Pause
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerStartBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            timerStartBtn.classList.remove('running');
+        } else {
+            if (timerTotalSeconds <= 0) return;
+            // Start
+            timerInterval = setInterval(() => {
+                timerTotalSeconds--;
+                updateTimerDisplay();
+                if (timerTotalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerStartBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+                    timerStartBtn.classList.remove('running');
+                    playNotificationSound();
+                    showDesktopNotification('Timer Finished', { body: 'Time is up!' });
+                }
+            }, 1000);
+            timerStartBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+            timerStartBtn.classList.add('running');
+        }
+    };
+}
+
+if (timerResetBtn) {
+    timerResetBtn.onclick = () => {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        timerTotalSeconds = 0;
+        updateTimerDisplay();
+        timerStartBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+        timerStartBtn.classList.remove('running');
+    };
+}
+
+// Tool Interception logic
+function handleClockTool(tag) {
+    const actionMatch = /action=["']([^"']+)["']/.exec(tag);
+    const valueMatch = /value=["']([^"']+)["']/.exec(tag);
+    
+    if (!actionMatch) return;
+    const action = actionMatch[1];
+    const value = valueMatch ? valueMatch[1] : null;
+
+    if (action === 'open') {
+        openClock(value || 'clock');
+    } else if (action === 'start_stopwatch') {
+        openClock('stopwatch');
+        if (!stopwatchInterval) stopwatchStartBtn.click();
+    } else if (action === 'start_timer') {
+        openClock('timer');
+        if (value) {
+            timerTotalSeconds = parseInt(value) * 60;
+            updateTimerDisplay();
+        }
+        if (!timerInterval) timerStartBtn.click();
+    } else if (action === 'close') {
+        closeClock();
+    }
+}
 
 async function send() {
     if (send_button.disabled || input.classList.contains('thinking')) return;
@@ -1154,13 +1396,25 @@ async function send() {
 
             ### Environment
             User OS: ${process.platform}
+            Current Time: ${new Date().toLocaleString()}
             
             ### Interaction Style
             * Be fast and decisive.
             * If a prompt is ambiguous, provide a brief, high-quality answer and ask one targeted follow-up question to refine your help.
             * Don't be afraid to use humor, but never at the expense of being helpful.
             
-            Whenever you answer, explain what you are doing!`;
+            Whenever you answer, explain what you are doing!
+            
+            ### Clock Tool
+            You can control a clock widget for the user. To use it, include one of these tags in your response:
+            - Open clock: <clock action="open" value="clock" />
+            - Open timer: <clock action="open" value="timer" />
+            - Open stopwatch: <clock action="open" value="stopwatch" />
+            - Start timer: <clock action="start_timer" value="X" /> (where X is the number of minutes as a plain number)
+            - Start stopwatch: <clock action="start_stopwatch" />
+            - Close clock: <clock action="close" />
+            
+            Always confirm the action to the user as well.`;
 
         const selectedModelKey = currentModelKey;
 
@@ -1188,6 +1442,12 @@ async function send() {
 
                 if (currentAbortController && !currentAbortController.signal.aborted) {
                     await typeMessage(assistantContent, assistantMessageContent, 2, currentAbortController.signal);
+                    
+                    // Parse for tools
+                    const clockTags = assistantMessageContent.match(/<clock\s+[^>]*\/>/g);
+                    if (clockTags) {
+                        clockTags.forEach(tag => handleClockTool(tag));
+                    }
                 }
                 aiOutput.parentElement.scrollTop = aiOutput.parentElement.scrollHeight;
                 
@@ -1308,6 +1568,11 @@ function triggerHideSequence() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.remove('visible');
+    }
+
+    // Add Clock Widget to hide sequence
+    if (clockWidget && clockWidget.classList.contains('visible')) {
+        closeClock();
     }
 
     container.classList.add('animate-out');

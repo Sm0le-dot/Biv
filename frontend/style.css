@@ -28,7 +28,7 @@ body {
 
 .container {
     display: flex;
-    background-color: #2f2f2f; 
+    background-color: #2f2f2f;
     width: 40%;
     max-height: 200px;
     border-radius: 26px;
@@ -651,6 +651,37 @@ textarea::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+#stopwatch-toggle-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 8px;
+    bottom: 38px;
+    /* Positioned above history-button */
+    transition: all 0.2s;
+    color: #888888;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+}
+
+#stopwatch-toggle-btn:hover {
+    color: #a8c7fa;
+    background-color: rgba(168, 199, 250, 0.1);
+}
+
+[data-theme="light"] #stopwatch-toggle-btn:hover {
+    color: #0b57d0;
+    background-color: rgba(11, 87, 208, 0.1);
+}
+
 #attach-button {
     background-color: transparent;
     border: none;
@@ -687,7 +718,7 @@ textarea::-webkit-scrollbar-thumb {
     flex-wrap: wrap;
     max-width: 90%;
     z-index: 20;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .preview-item {
@@ -725,7 +756,7 @@ textarea::-webkit-scrollbar-thumb {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     z-index: 2;
 }
 
@@ -947,12 +978,12 @@ textarea::-webkit-scrollbar-thumb {
     transition: background-color 0.2s;
 }
 
-input[type="radio"]:checked + .radio-indicator {
+input[type="radio"]:checked+.radio-indicator {
     border-color: #4a9eff;
     background-color: rgba(74, 158, 255, 0.15);
 }
 
-input[type="radio"]:checked + .radio-indicator::after {
+input[type="radio"]:checked+.radio-indicator::after {
     background-color: #4a9eff;
 }
 
@@ -979,11 +1010,11 @@ input[type="radio"]:checked + .radio-indicator::after {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-input[type="checkbox"]:checked + .toggle-control {
+input[type="checkbox"]:checked+.toggle-control {
     background-color: #4a9eff;
 }
 
-input[type="checkbox"]:checked + .toggle-control::before {
+input[type="checkbox"]:checked+.toggle-control::before {
     transform: translateX(18px);
 }
 
@@ -1217,3 +1248,290 @@ html[data-theme="transparent"] .settings-header h3 {
     color: #ebebeb;
     font-style: italic;
 }
+
+/* ============ COMPACT APP-STYLE CLOCK WIDGET ============ */
+
+.clock-widget {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    width: 240px;
+    background-color: #2f2f2f;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    z-index: 3000;
+    overflow: hidden;
+    color: #e3e3e3;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    pointer-events: auto;
+    user-select: none;
+}
+
+[data-theme="light"] .clock-widget {
+    background: #ffffff;
+    color: #1f1f1f;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.clock-widget.visible {
+    display: flex;
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.clock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.021);
+}
+
+[data-theme="light"] .clock-header {
+    background: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.clock-tabs {
+    display: flex;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 3px;
+    border-radius: 12px;
+}
+
+[data-theme="light"] .clock-tabs {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.clock-tab {
+    background: none;
+    border: none;
+    color: #9aa0a6;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 9px;
+    transition: all 0.2s;
+}
+
+.clock-tab:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .clock-tab:hover {
+    color: #1f1f1f;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.clock-tab.active {
+    color: #a8c7fa;
+    background: rgba(168, 199, 250, 0.12);
+}
+
+[data-theme="light"] .clock-tab.active {
+    color: #0b57d0;
+    background: rgba(11, 87, 208, 0.1);
+}
+
+.clock-content {
+    padding: 16px 14px 20px 14px;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tab-pane {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    animation: appClockFadeIn 0.3s ease-out;
+}
+
+.tab-pane.active {
+    display: flex;
+}
+
+@keyframes appClockFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Digital Clock */
+.digital-clock {
+    font-size: 40px;
+    font-weight: 300;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+}
+
+.date-display {
+    font-size: 11px;
+    color: #a8c7fa;
+    margin-top: 2px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+[data-theme="light"] .date-display {
+    color: #0b57d0;
+}
+
+/* Timer & Stopwatch */
+.timer-display,
+.stopwatch-display {
+    font-size: 40px;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 20px;
+}
+
+.timer-controls,
+.stopwatch-controls {
+    display: flex;
+    gap: 14px;
+}
+
+.timer-btn,
+.stopwatch-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.04);
+    color: #a8c7fa;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="light"] .timer-btn,
+[data-theme="light"] .stopwatch-btn {
+    background: rgba(0, 0, 0, 0.04);
+    color: #0b57d0;
+}
+
+.timer-btn:hover,
+.stopwatch-btn:hover {
+    background: rgba(168, 199, 250, 0.1);
+    transform: scale(1.05);
+}
+
+.timer-btn.running,
+.stopwatch-btn.running {
+    background: rgba(242, 139, 130, 0.1) !important;
+    color: #f28b82 !important;
+}
+
+.timer-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 12px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] .timer-input-group {
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.timer-input-group input {
+    width: 36px;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    font-weight: 500;
+    overflow: hidden;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.timer-input-group input::-webkit-outer-spin-button,
+.timer-input-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.timer-input-group span {
+    color: #888;
+}
+
+.timer-set-btn {
+    background: #a8c7fa;
+    border: none;
+    color: #062e6f;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 4px;
+    transition: all 0.2s;
+}
+
+[data-theme="light"] .timer-set-btn {
+    background: #0b57d0;
+    color: #fff;
+}
+
+.stopwatch-laps {
+    margin-top: 16px;
+    width: 100%;
+    max-height: 100px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.stopwatch-laps::-webkit-scrollbar {
+    width: 3px;
+}
+
+.lap-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    font-size: 12px;
+    color: #9aa0a6;
+}
+
+[data-theme="light"] .lap-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.lap-item span:last-child {
+    color: inherit;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 600;
+}
+
+/* ============ END COMPACT APP-STYLE CLOCK WIDGET ============ */

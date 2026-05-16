@@ -20,6 +20,51 @@
         <div class="ai_output_div" id="aiOutput"></div>
     </div>
 
+    <!-- Dynamic Island Clock Widget -->
+    <div id="clock-widget" class="clock-widget">
+        <div class="clock-header">
+            <div class="clock-tabs">
+                <button class="clock-tab active" data-tab="clock"><i class="fa-solid fa-clock"></i></button>
+                <button class="clock-tab" data-tab="timer"><i class="fa-solid fa-hourglass-start"></i></button>
+                <button class="clock-tab" data-tab="stopwatch"><i class="fa-solid fa-stopwatch"></i></button>
+            </div>
+        </div>
+
+        <div class="clock-content">
+            <!-- Clock Tab -->
+            <div id="tab-clock" class="tab-pane active">
+                <div class="digital-clock" id="digital-clock">00:00:00</div>
+                <div class="date-display" id="date-display">Monday, May 16</div>
+            </div>
+
+            <!-- Timer Tab -->
+            <div id="tab-timer" class="tab-pane">
+                <div class="timer-display" id="timer-display">05:00</div>
+                <div class="timer-controls">
+                    <button class="timer-btn" id="timer-start"><i class="fa-solid fa-play"></i></button>
+                    <button class="timer-btn" id="timer-reset"><i class="fa-solid fa-undo"></i></button>
+                </div>
+                <div class="timer-input-group" id="timer-setup">
+                    <input type="number" id="timer-min" placeholder="Min" min="0" max="99">
+                    <span>:</span>
+                    <input type="number" id="timer-sec" placeholder="Sec" min="0" max="59">
+                    <button class="timer-set-btn" id="timer-set">Set</button>
+                </div>
+            </div>
+
+            <!-- Stopwatch Tab -->
+            <div id="tab-stopwatch" class="tab-pane">
+                <div class="stopwatch-display" id="stopwatch-display">00:00.00</div>
+                <div class="stopwatch-controls">
+                    <button class="stopwatch-btn" id="stopwatch-start"><i class="fa-solid fa-play"></i></button>
+                    <button class="stopwatch-btn" id="stopwatch-reset"><i class="fa-solid fa-undo"></i></button>
+                    <button class="stopwatch-btn" id="stopwatch-lap"><i class="fa-solid fa-flag"></i></button>
+                </div>
+                <div class="stopwatch-laps" id="stopwatch-laps"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="container" id="container">
         <div id="ollama-missing-banner" class="ollama-missing-banner" role="status" aria-live="polite">
             <span class="ollama-missing-text">Ollama is not running on this PC. Local models need the Ollama app
@@ -42,15 +87,19 @@
 
         <div id="image-preview-wrapper" style="display: none;"></div>
 
-        <input type="file" id="file-input" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+        <input type="file" id="file-input" accept="image/*" multiple style="display: none;"
+            onchange="handleFileSelect(event)">
         <button id="attach-button" type="button" onclick="document.getElementById('file-input').click()"><i
                 class="fa-solid fa-paperclip"></i></button>
 
         <button id="history-button" type="button" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+        <button id="stopwatch-toggle-btn" type="button" onclick="toggleClock('stopwatch')" title="Toggle Stopwatch"><i
+                class="fa-solid fa-stopwatch"></i></button>
         <button id="settings-button" type="button" onclick="toggleSettings()"><i class="fa-solid fa-gear"></i></button>
         <textarea id="ai-input" placeholder="Ask anything…" autofocus></textarea>
         <button id="send-button" type="button" onclick="send()"><i
                 class="fa-solid fa-arrow-up send-button"></i></button>
+
     </div>
 
     <!-- Settings Sidebar -->
@@ -59,76 +108,77 @@
             <h3>Settings</h3>
         </div>
         <div class="settings-body">
-                <!-- Theme Section -->
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-palette"></i> Theme</h3>
-                    <div class="settings-option radio-option">
-                        <label class="radio-label">
-                            <input type="radio" name="theme" value="dark" onchange="changeTheme('dark')">
-                            <span class="radio-indicator"></span>
-                            <span class="option-text">Dark</span>
-                        </label>
-                    </div>
-                    <div class="settings-option radio-option">
-                        <label class="radio-label">
-                            <input type="radio" name="theme" value="light" onchange="changeTheme('light')">
-                            <span class="radio-indicator"></span>
-                            <span class="option-text">Light (No need for that)</span>
-                        </label>
-                    </div>
-                    <div class="settings-option radio-option">
-                        <label class="radio-label">
-                            <input type="radio" name="theme" value="transparent" onchange="changeTheme('transparent')">
-                            <span class="radio-indicator"></span>
-                            <span class="option-text">Transparent</span>
-                        </label>
-                    </div>
+            <!-- Theme Section -->
+            <div class="settings-section">
+                <h3><i class="fa-solid fa-palette"></i> Theme</h3>
+                <div class="settings-option radio-option">
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="dark" onchange="changeTheme('dark')">
+                        <span class="radio-indicator"></span>
+                        <span class="option-text">Dark</span>
+                    </label>
                 </div>
+                <div class="settings-option radio-option">
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="light" onchange="changeTheme('light')">
+                        <span class="radio-indicator"></span>
+                        <span class="option-text">Light (No need for that)</span>
+                    </label>
+                </div>
+                <div class="settings-option radio-option">
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="transparent" onchange="changeTheme('transparent')">
+                        <span class="radio-indicator"></span>
+                        <span class="option-text">Transparent</span>
+                    </label>
+                </div>
+            </div>
 
-                <!-- Notifications Section -->
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
-                    <div class="settings-option">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="sound-notify" onchange="toggleSoundNotification()">
-                            <span class="toggle-control"></span>
-                            <span class="option-text">Sound on response</span>
-                        </label>
-                    </div>
-                    <div class="settings-option">
-                        <label class="toggle-label">
-                            <input type="checkbox" id="desktop-notify" onchange="toggleDesktopNotification()">
-                            <span class="toggle-control"></span>
-                            <span class="option-text">Desktop notifications</span>
-                        </label>
-                    </div>
+            <!-- Notifications Section -->
+            <div class="settings-section">
+                <h3><i class="fa-solid fa-bell"></i> Notifications</h3>
+                <div class="settings-option">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="sound-notify" onchange="toggleSoundNotification()">
+                        <span class="toggle-control"></span>
+                        <span class="option-text">Sound on response</span>
+                    </label>
                 </div>
+                <div class="settings-option">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="desktop-notify" onchange="toggleDesktopNotification()">
+                        <span class="toggle-control"></span>
+                        <span class="option-text">Desktop notifications</span>
+                    </label>
+                </div>
+            </div>
 
-                <!-- Backup Section -->
-                <div class="settings-section">
-                    <h3><i class="fa-solid fa-download"></i> Backup & Export</h3>
-                    <div class="settings-option">
-                        <button type="button" class="settings-btn" onclick="exportChats()">
-                            <i class="fa-solid fa-file-export"></i> Export Chats
-                        </button>
-                    </div>
-                    <div class="settings-option">
-                        <button type="button" class="settings-btn" onclick="importChats()">
-                            <i class="fa-solid fa-file-import"></i> Import Chats
-                        </button>
-                        <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImportChats(event)">
-                    </div>
+            <!-- Backup Section -->
+            <div class="settings-section">
+                <h3><i class="fa-solid fa-download"></i> Backup & Export</h3>
+                <div class="settings-option">
+                    <button type="button" class="settings-btn" onclick="exportChats()">
+                        <i class="fa-solid fa-file-export"></i> Export Chats
+                    </button>
                 </div>
+                <div class="settings-option">
+                    <button type="button" class="settings-btn" onclick="importChats()">
+                        <i class="fa-solid fa-file-import"></i> Import Chats
+                    </button>
+                    <input type="file" id="import-file" accept=".json" style="display: none;"
+                        onchange="handleImportChats(event)">
+                </div>
+            </div>
 
-                <!-- Danger Zone -->
-                <div class="settings-section danger">
-                    <h3><i class="fa-solid fa-exclamation-triangle"></i> Danger Zone</h3>
-                    <div class="settings-option">
-                        <button type="button" class="settings-btn danger-btn" onclick="confirmClearChats()">
-                            <i class="fa-solid fa-trash"></i> Clear All Chats
-                        </button>
-                    </div>
+            <!-- Danger Zone -->
+            <div class="settings-section danger">
+                <h3><i class="fa-solid fa-exclamation-triangle"></i> Danger Zone</h3>
+                <div class="settings-option">
+                    <button type="button" class="settings-btn danger-btn" onclick="confirmClearChats()">
+                        <i class="fa-solid fa-trash"></i> Clear All Chats
+                    </button>
                 </div>
+            </div>
         </div>
     </div>
 
